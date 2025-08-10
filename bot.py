@@ -2,11 +2,9 @@ import os
 import discord
 from discord.ext import commands
 
-# Get bot token from Render's environment variable
-TOKEN = os.getenv("TOKEN")
-
-# Bot setup
 intents = discord.Intents.default()
+intents.message_content = True
+
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
@@ -22,5 +20,5 @@ async def manualsys(ctx):
     )
     await ctx.send(message)
 
-# Run the bot
+TOKEN = os.getenv("TOKEN")
 bot.run(TOKEN)
