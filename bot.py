@@ -1,6 +1,8 @@
 import os
 import discord
 from discord.ext import commands
+from aiohttp import web
+import asyncio
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -20,5 +22,23 @@ async def manualsys(ctx):
     )
     await ctx.send(message)
 
-TOKEN = os.getenv("TOKEN")
-bot.run(TOKEN)
+# Web server handler for uptime monitoring
+async def handle(request):
+    return web.Response(text="Bot is alive")
+
+app = web.Application()
+app.router.add_get("/", handle)
+
+async def start_webserver():
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.getenv("PORT", 8080))  # Use PORT env variable or 8080 default
+    site = web.TCPSite(runner, '0.0.0.0', port)
+    await site.start()
+    print(f"🌐 Webserver running on port {port}")
+
+async def main():
+    await start_webserver()           # Start the web server
+    await bot.start(os.getenv("TOKEN"))  # Start the Discord bot
+
+asyncio.run(main())
